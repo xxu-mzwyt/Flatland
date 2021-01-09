@@ -3,7 +3,7 @@ import math
 from pygame.locals import *
 
 pygame.init()
-screen = pygame.display.set_mode((720,600))
+screen = pygame.display.set_mode((720,30))
 
 edges_list = [((-1, 2), (0, 1)),\
          ((0, 1), (1, 3)),\
@@ -43,9 +43,10 @@ def swap(item1, item2):
 
 def update():
     global tot_display, c_node
+    tot_display = []
+
     # curr_ang: current angle in degree * 4
     # curr_dis: current minimum distance to the edges
-    # tot_display = []
     for curr_ang in range(1440):
         curr_dis = float("inf")
         for edge in edges_list:
@@ -56,6 +57,8 @@ def update():
             if ang1 > ang2:
                 node1, node2 = swap(node1, node2)
                 ang1, ang2 = swap(ang1, ang2)
+            elif ang1 == ang2:
+                continue
 
             if curr_ang >= ang1 and curr_ang <= ang2:
                 curr_dis = min(curr_dis, cal_dis(node1, node2, curr_ang))
@@ -66,21 +69,6 @@ running = True
 update()
 
 while running:
-    fov_scale = 0
-    fov_scale = pygame.surface.Surface((720, 30))
-    for i in range(fov_start, fov_start-720, -1):
-        if i < 0:
-            deg = i + 1440
-        else:
-            deg = i
-        color_value = int(255 / (tot_display[deg] + 1))
-        color = (color_value, color_value, color_value)
-        line_rect = Rect(deg, 0, 1, 30)
-        pygame.draw.rect(fov_scale, color, line_rect)
-
-    screen.blit(fov_scale, (0, 0))
-    
-    pygame.display.update()
     
     for event in pygame.event.get():
         if event.type == KEYDOWN:
@@ -92,14 +80,32 @@ while running:
     key_list = pygame.key.get_pressed()  
     if key_list[pygame.K_RIGHT]: 
         c_node[0] += 0.01
-        # fov_start -= 1
-        print(c_node)
+        # fov_start += 1
         update()
     elif key_list[pygame.K_LEFT]:
         c_node[0] -= 0.01
-        # fov_start += 1
+        # fov_start -= 1
         update()
-        print(c_node)
+    elif key_list[pygame.K_UP]:
+        c_node[1] += 0.01
+        update()
+    elif key_list[pygame.K_DOWN]:
+        c_node[1] -= 0.01
+        update()
+    
+    fov_scale = pygame.surface.Surface((540, 30))
+    for deg in range(fov_start, fov_start-540, -1):
+        # print(deg)
+        if deg < 0:
+            deg += 1440
+        color_value = int(255 / (tot_display[deg] + 1))
+        color = (color_value, color_value, color_value)
+        line_rect = Rect(deg, 0, 1, 30)
+        pygame.draw.rect(fov_scale, color, line_rect)
+
+    screen.blit(fov_scale, (0, 0))
+
+    pygame.display.update()
 
 
 
