@@ -5,9 +5,11 @@ from pygame.locals import *
 pygame.init()
 screen = pygame.display.set_mode((720,30))
 
-edges_list = [((-1, 2), (0, 1)),\
-         ((0, 1), (1, 3)),\
-         ((1, 3), (-1, 2))]
+edges_list = [\
+    ((-1, 2), (0, 1)),\
+    ((0, 1), (1, 3)),\
+    ((1, 3), (-1, 2))\
+    ]
 
 tot_display = []
 
@@ -79,12 +81,12 @@ while running:
 
     key_list = pygame.key.get_pressed()  
     if key_list[pygame.K_RIGHT]: 
-        c_node[0] += 0.01
-        # fov_start += 1
+        # c_node[0] += 0.01
+        fov_start += 1
         update()
     elif key_list[pygame.K_LEFT]:
-        c_node[0] -= 0.01
-        # fov_start -= 1
+        # c_node[0] -= 0.01
+        fov_start -= 1
         update()
     elif key_list[pygame.K_UP]:
         c_node[1] += 0.01
@@ -92,12 +94,15 @@ while running:
     elif key_list[pygame.K_DOWN]:
         c_node[1] -= 0.01
         update()
-    
+    print(fov_start)    
     fov_scale = pygame.surface.Surface((540, 30))
-    for deg in range(fov_start, fov_start-540, -1):
+    for deg_raw in range(fov_start, fov_start-540, -1):
         # print(deg)
-        if deg < 0:
-            deg += 1440
+        if deg_raw < 0:
+            deg = deg_raw + 1440
+        else:
+            deg = deg_raw
+
         color_value = int(255 / (tot_display[deg] + 1))
         color = (color_value, color_value, color_value)
         line_rect = Rect(deg, 0, 1, 30)
